@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Abort on Errors
+set -e
+
 # Save Current Path
 currentpath=$(pwd)
 
@@ -18,7 +21,7 @@ sudo apt install build-essential libsecret-1-dev libglib2.0-dev
 sudo apt-get install rpm
 
 # Bitwarden expects target to be x86_64-unknown-linux-musl, NOT x86_64-unknown-linux-gnu
-apt install musl musl-dev musl-fts musl-tools
+sudo apt install musl musl-dev musl-fts musl-tools
 
 # Install Zig
 # $HOME/.local/bin is already in my PATH set in/from ~/.bashrc and ~/.bash_profile
@@ -29,8 +32,12 @@ tar xf /tmp/zig-linux-x86_64-${ZIGVERSION}.tar.xz --strip-components 1 -C $HOME/
 rm -f /tmp/zig-linux-x86_64-${ZIGVERSION}.tar.xz
 
 # Add to ~/.bash_profile
+echo -e "\n"
 echo "You should now add those to your $HOME/.bash_profile in order to set the right PATH so that zig can be found by npm"
 cat <<EOF
+#####################################################
+#####################################################
+
 # Append to PATH if not exist yet
 # Prevents from appending to PATH every time
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -42,8 +49,16 @@ fi
 if [[ ":$PATH:" != *":$HOME/.zig:"* ]]; then
     export PATH="$PATH:$HOME/.zig"
 fi
+
+#####################################################
+#####################################################
 EOF
-read "Are you ready to modify your $HOME/.bash_profile file ? Press ENTER. " dummyvar
+echo "Please COPY the contents mentioned above. The <nano> File Editor will automatically be launched afterwards."
+read -p "Are you ready to modify your $HOME/.bash_profile file ? Press ENTER. " dummyvar
+echo -e "\n"
+
+# Open File for Editing
+nano ~/.bash_profile
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -70,8 +85,16 @@ REQUIRED_NODE_VERSION="v18.18.0"
 REQUIRED_NPM_VERSION="9"
 nvm install ${REQUIRED_NODE_VERSION}
 nvm alias default ${REQUIRED_NODE_VERSION}
-npm install -g node@${REQUIRED_NODE_VERSION}
-npm install -g npm@${REQUIRED_NPM_VERSION}
+
+if [[ ! -f $HOME/.config/nvm/versions/node/${REQUIRED_NODE_VERSION}/bin/node ]]
+then
+   npm install -g node@${REQUIRED_NODE_VERSION}
+fi
+
+if [[ ! -f $HOME/.config/nvm/versions/node/${REQUIRED_NPM_VERSION}/bin/npm ]]
+then
+   npm install -g npm@${REQUIRED_NPM_VERSION}
+fi
 
 # You can also remove other versions with
 # "nvm uninstall v18.20.2"
@@ -79,9 +102,6 @@ npm install -g npm@${REQUIRED_NPM_VERSION}
 # Load Main Profile
 # This includes the Settings for the NPM/Cargo/NodeJS Environment
 source ~/.bash_profile
-
-# Abort on Errors
-set -e
 
 # If Repository doesn't exists
 if [[ ! -d "clients" ]]
