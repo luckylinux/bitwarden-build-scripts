@@ -225,7 +225,7 @@ sed -Ei "s|desktop_native.linux-x64-musl.node|desktop_native.linux-x64-gnu.node|
 sed -Ei "s|desktop-native-linux-x64-musl|desktop-native-linux-x64-gnu|g" ${repositoryroot}/apps/desktop/desktop_native/index.js
 
 echo "Copy the following Text and insert it at the TOP of the package.json file that is being opened."
-echo <<EOF
+cat <<EOF
   "directories": {
     "buildResources": "build",
     "app": "build"
