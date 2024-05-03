@@ -233,7 +233,15 @@ cat <<EOF
 EOF
 
 read -p "Copy the Text. Once ready, press ENTER. " dummyvar
-nano ${repositoryroot}/apps/desktop/package.json
+#nano ${repositoryroot}/apps/desktop/package.json
+nano ${repositoryroot}/apps/desktop/build/package.json
+
+# Might also require editing these files
+#${repositoryroot}/apps/desktop/package.json
+#${repositoryroot}/apps/desktop/build/package.json
+#${repositoryroot}/apps/desktop/desktop_native/target/package/desktop_native-0.0.0/package.json
+#${repositoryroot}/apps/desktop/src/package.json
+
 
 #read -r -d '' extratext << EOM
 #  "directories": {
@@ -332,12 +340,8 @@ fi
 echo "Starting to build the <desktop> APP now"
 cd ${repositoryroot}/apps/desktop || exit
 
-# To just run the app without building the Package:
-#npm run electron --allow-dirty --target x86_64-unknown-linux-gnu
-#npm run electron --allow-dirty
-
 # This is the same/similar to building the desktop_native app from within the subfolder (see above)
-####npm run build-native
+npm run build-native
 
 # See also https://www.electron.build/cli.html for command line arguments and the different options
 echo "Running <npm run build:main>"
@@ -349,6 +353,17 @@ echo "Running <npm run build:main>"
 # Build WITHOUT cross-compiling
 NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
 
+# To just run the app without building the Package:
+#npm run electron --allow-dirty --target x86_64-unknown-linux-gnu
+#npm run electron --allow-dirty
+# This is needed otherwise we get a index.html ERR_FILE_NOT_FOUND
+# Quit the Application immediately. Disable stopping on errors since this WILL trigger an Error !
+set +e
+NODE_ENV=production node ./scripts/start.js
+set +e
+
+# Call again
+npm run build:main
 
 # To build & Package in ALL Formats (AppImage, snap, rpm,. deb, FreeBSD, ...)
 # This also OVERRIDES the "<npm run build:main>" we ran aboce and also builds the build:renderer/build:preload targets
