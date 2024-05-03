@@ -329,30 +329,44 @@ cd ${repositoryroot}/apps/desktop || exit
 npm run build-native
 
 # See also https://www.electron.build/cli.html for command line arguments and the different options
-echo "Running <npm run build:main>"
+#echo "Running <npm run build:main>"
 ##### This can result in musl library being required, while musl desktop-native is NOT working correclty
 #####npm run build:main
 # This is equivalent to: <cross-env NODE_ENV=production webpack --config webpack.main.js>
 #${repositoryroot}/node_modules/.bin/cross-env NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+#npm run build:main
 
 # Build WITHOUT cross-compiling
-NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+#NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
 
 # To just run the app without building the Package:
 #npm run electron --allow-dirty --target x86_64-unknown-linux-gnu
 #npm run electron --allow-dirty
 # This is needed otherwise we get a index.html ERR_FILE_NOT_FOUND
 # Quit the Application immediately. Disable stopping on errors since this WILL trigger an Error !
-set +e
-NODE_ENV=production node ./scripts/start.js
-set +e
+#
+# This is what actually creates the ./buildf/ folder and populates its Content
+#set +e
+#NODE_ENV=production node ./scripts/start.js
+#set +e
 
 # Call again
-npm run build:main
+#npm run build:main
 
 # To build & Package in ALL Formats (AppImage, snap, rpm,. deb, FreeBSD, ...)
 # This also OVERRIDES the "<npm run build:main>" we ran above and also builds the build:renderer/build:preload targets
 #npm run dist:lin
+
+# Run with cross-env
+# Must also do build:preload and build:renderer, otherwise index.html will NOT exist inside the build/ directory !
+#npm run build:preload
+#npm run build:main
+#npm run build:renderer
+
+# Run WITHOUT cross-env
+NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.preload.js
+NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.renderer.js
 
 # If you only want to build some types of Packages
 # Reference: https://www.electron.build/configuration/linux#LinuxConfiguration-target
