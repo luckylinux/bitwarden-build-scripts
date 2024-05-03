@@ -213,9 +213,38 @@ source ~/.bash_profile
 #echo $PATH
 #which rustup
 
-# Replace Content
-sed -Ei "s|(\s*?)max-width: 250px;|\1max-width: 600px;|g" ./apps/desktop/src/scss/left-nav.scss
-sed -Ei "s|(\s*?)max-width: 350px;|\1max-width: 600px;|g" ./apps/desktop/src/scss/vault.scss
+# Replace Content for the sidebar
+sed -Ei "s|(\s*?)max-width: 250px;|\1max-width: 500px;|g" ./apps/desktop/src/scss/left-nav.scss
+sed -Ei "s|(\s*?)max-width: 350px;|\1max-width: 500px;|g" ./apps/desktop/src/scss/vault.scss
+
+# Switch to x86_64-unknown-linux-gnu instead of x86_64-unknown-linux-musl
+# nativeBinding = require('./desktop_native.linux-x64-musl.node')
+# nativeBinding = require('@bitwarden/desktop-native-linux-x64-musl')
+
+sed -Ei "s|desktop_native.linux-x64-musl.node|desktop_native.linux-x64-gnu.node|g" ${repositoryroot}/apps/desktop/desktop_native/index.js
+sed -Ei "s|desktop-native-linux-x64-musl|desktop-native-linux-x64-gnu|g" ${repositoryroot}/apps/desktop/desktop_native/index.js
+
+echo "Copy the following Text and insert it at the TOP of the package.json file that is being opened."
+echo <<EOF
+  "directories": {
+    "buildResources": "build",
+    "app": "build"
+  },
+EOF
+
+read -p "Copy the Text. Once ready, press ENTER. " dummyvar
+nano ${repositoryroot}/apps/desktop/package.json
+
+#read -r -d '' extratext << EOM
+#  "directories": {
+#    "buildResources": "build",
+#    "app": "build"
+#  },
+#
+#EOM
+#
+#sed  -i "/\s*?\"name\": \"@bitwarden/desktop\",/i ${extratext}" ${repositoryroot}/apps/desktop/package.json
+#sed -i "2i ${extratext}" ${repositoryroot}/apps/desktop/package.json
 
 # Add Target x86_64-unknown-linux-musl
 # Make sure we also can satisfy x86_64-unknown-linux-musl libraries
@@ -312,9 +341,14 @@ cd ${repositoryroot}/apps/desktop || exit
 
 # See also https://www.electron.build/cli.html for command line arguments and the different options
 echo "Running <npm run build:main>"
-npm run build:main
+##### This can result in musl library being required, while musl desktop-native is NOT working correclty
+#####npm run build:main
 # This is equivalent to: <cross-env NODE_ENV=production webpack --config webpack.main.js>
-# ${repositoryroot}/node_modules/.bin/cross-env NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+#${repositoryroot}/node_modules/.bin/cross-env NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+
+# Build WITHOUT cross-compiling
+NODE_ENV=production ${repositoryroot}/node_modules/.bin/webpack --config webpack.main.js
+
 
 # To build & Package in ALL Formats (AppImage, snap, rpm,. deb, FreeBSD, ...)
 # This also OVERRIDES the "<npm run build:main>" we ran aboce and also builds the build:renderer/build:preload targets
