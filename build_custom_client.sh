@@ -303,7 +303,7 @@ RUSTFLAGS="-C target-feature=-crt-static" cargo package --target=x86_64-unknown-
 # This SUCCEEDS
 #echo "Running <npm run build x86_64-unknown-linux-gnu>"
 #npm run build --target x86_64-unknown-linux-gnu
-npm run build -- --target x86_64-unknown-linux-gnu
+npm run build -- --target x86_64-unknown-linux-gnu --profile release
 #npm run build -- --target x86_64-unknown-linux-gnu --allow-dirty
 
 # The files will be available in ${repositoryroot}/apps/desktop/desktop_native/target/x86_64-unknown-linux-musl/release/libdesktop_native.so
