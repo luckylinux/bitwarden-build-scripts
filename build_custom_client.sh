@@ -176,11 +176,6 @@ NODE_ENV=production
 # And start from Scratch
 npm ci
 
-# Cargo can be found until here
-#echo $PATH
-#which cargo
-#exit
-
 #cargo add secret
 #cargo add libsecret
 
@@ -204,15 +199,6 @@ npm i -g electron-builder
 source ~/.bashrc
 source ~/.bash_profile
 
-# Cargo can be found until here
-#echo $PATH
-#which cargo
-#exit
-
-# Rustop can be found until here
-#echo $PATH
-#which rustup
-
 # Replace Content for the sidebar
 sed -Ei "s|(\s*?)max-width: 250px;|\1max-width: 500px;|g" ./apps/desktop/src/scss/left-nav.scss
 sed -Ei "s|(\s*?)max-width: 350px;|\1max-width: 500px;|g" ./apps/desktop/src/scss/vault.scss
@@ -233,15 +219,14 @@ cat <<EOF
 EOF
 
 read -p "Copy the Text. Once ready, press ENTER. " dummyvar
-#nano ${repositoryroot}/apps/desktop/package.json
-nano ${repositoryroot}/apps/desktop/build/package.json
+nano ${repositoryroot}/apps/desktop/package.json
+#nano ${repositoryroot}/apps/desktop/build/package.json
 
 # Might also require editing these files
 #${repositoryroot}/apps/desktop/package.json
 #${repositoryroot}/apps/desktop/build/package.json
 #${repositoryroot}/apps/desktop/desktop_native/target/package/desktop_native-0.0.0/package.json
 #${repositoryroot}/apps/desktop/src/package.json
-
 
 #read -r -d '' extratext << EOM
 #  "directories": {
@@ -366,8 +351,8 @@ set +e
 npm run build:main
 
 # To build & Package in ALL Formats (AppImage, snap, rpm,. deb, FreeBSD, ...)
-# This also OVERRIDES the "<npm run build:main>" we ran aboce and also builds the build:renderer/build:preload targets
-####npm run dist:lin
+# This also OVERRIDES the "<npm run build:main>" we ran above and also builds the build:renderer/build:preload targets
+#npm run dist:lin
 
 # If you only want to build some types of Packages
 # Reference: https://www.electron.build/configuration/linux#LinuxConfiguration-target
@@ -385,8 +370,8 @@ echo "Files are avilable in: ${repositoryroot}/apps/desktop/dist/"
 ls -l ${repositoryroot}/apps/desktop/dist/
 
 # NOT NEEDED
-####npm run pack:lin
-####npm run publish:lin
+#npm run pack:lin
+#npm run publish:lin
 
 # Change back to Script Path
 cd ${currentpath} || exit
